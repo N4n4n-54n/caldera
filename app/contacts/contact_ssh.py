@@ -1,7 +1,4 @@
-import asyncio
-import json
 import os
-import sys
 
 import asyncssh
 
@@ -29,6 +26,7 @@ class Contact(BaseWorld):
         await asyncssh.create_server(self.server_factory, addr, int(port),
                                      server_host_keys=[host_key],
                                      process_factory=self.handle_client)
+
     def server_factory(self):
         return SSHServerContact(self.services, self._user_name, self._user_password)
 
@@ -37,6 +35,7 @@ class Contact(BaseWorld):
         process.stdout.write('Welcome to my SSH server, %s!\n' %
                              process.get_extra_info('username'))
         process.exit(0)
+
 
 class SSHServerContact(asyncssh.SSHServer):
     def __init__(self, services, user_name, user_password):
@@ -52,8 +51,7 @@ class SSHServerContact(asyncssh.SSHServer):
         return True
 
     def connection_made(self, conn):
-        self.log.debug('SSH connection received from %s.' %
-              conn.get_extra_info('peername')[0])
+        self.log.debug('SSH connection received from %s.' % conn.get_extra_info('peername')[0])
 
     def connection_lost(self, exc):
         if exc:
@@ -71,4 +69,3 @@ class SSHServerContact(asyncssh.SSHServer):
     def validate_password(self, username, password):
         valid_password = self.valid_user_credentials.get(username)
         return valid_password and password == valid_password
-
